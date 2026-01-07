@@ -4,11 +4,20 @@ export default async function handler(
   req: VercelRequest,
   res: VercelResponse
 ) {
+  // Aceita SOMENTE POST
+  if (req.method !== 'POST') {
+    return res.status(200).json({ ok: true });
+  }
+
   try {
-    const { prompt } = req.body;
+    const prompt = req.body?.prompt;
 
     if (!prompt) {
       return res.status(400).json({ error: 'Prompt não enviado' });
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: 'API Key não encontrada' });
     }
 
     const response = await fetch(
@@ -24,9 +33,8 @@ export default async function handler(
 
     const data = await response.json();
 
-    res.status(200).json(data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro interno' });
+    return res.status(200).json(data);
+  } catch (e) {
+    return res.status(500).json({ error: 'Falha ao chamar o Gemini' });
   }
 }
