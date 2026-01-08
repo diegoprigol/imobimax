@@ -18,9 +18,8 @@ function App() {
 
     const data = await res.json();
 
-    const texto =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Sem resposta da IA.";
+    const texto = data.text || "Sem resposta da IA.";
+
 
     setResposta(texto);
     setLoading(false);
